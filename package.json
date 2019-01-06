@@ -1,0 +1,32 @@
+{
+  "name": "reviewsystem-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://rejuan@bitbucket.org/rejuan/reviewsystem-nodejs.git"
+  },
+  "author": "A M S Rejuan",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/rejuan/reviewsystem-nodejs#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.3",
+    "config": "^3.0.1",
+    "express": "^4.16.4",
+    "express-async-errors": "^3.1.1",
+    "joi": "^14.3.1",
+    "joi-objectid": "^2.0.0",
+    "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.11",
+    "mongoose": "^5.4.2",
+    "winston": "^3.1.0",
+    "winston-mongodb": "^4.0.3"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
