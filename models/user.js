@@ -64,7 +64,23 @@ function validateUser(user) {
       .required(),
     password: Joi.string()
       .min(5)
-      .max(1024)
+      .max(255)
+      .required()
+  };
+
+  return Joi.validate(user, schema);
+}
+
+function signinValidation(user) {
+  const schema = {
+    email: Joi.string()
+      .min(5)
+      .max(255)
+      .required()
+      .email(),
+    password: Joi.string()
+      .min(5)
+      .max(255)
       .required()
   };
 
@@ -72,4 +88,5 @@ function validateUser(user) {
 }
 
 exports.User = User;
-exports.validate = validateUser;
+exports.registrationValidate = validateUser;
+exports.signinValidation = signinValidation;
