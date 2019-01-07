@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
 const winstone = require("winston");
+const config = require("config");
 
 module.exports = function() {
+  const db = config.get("db");
   mongoose
     .connect(
-      "mongodb://localhost/review",
+      db,
       { useNewUrlParser: true }
     )
-    .then(() => winstone.info("Mongodb connected successfully"));
+    .then(() => winstone.info(`${db} db server connected successfully`));
 };

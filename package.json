@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll --verbose",
+    "coverage": "jest --watchAll --verbose --coverage"
   },
   "repository": {
     "type": "git",
@@ -12,7 +13,6 @@
   },
   "author": "A M S Rejuan",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/rejuan/reviewsystem-nodejs#readme",
   "dependencies": {
     "bcrypt": "^3.0.3",
     "config": "^3.0.1",
@@ -27,6 +27,8 @@
     "winston-mongodb": "^4.0.3"
   },
   "devDependencies": {
-    "nodemon": "^1.18.9"
+    "jest": "^23.6.0",
+    "nodemon": "^1.18.9",
+    "supertest": "^3.3.0"
   }
 }
