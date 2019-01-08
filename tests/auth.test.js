@@ -1,4 +1,5 @@
 const request = require("supertest");
+const moment = require("moment");
 const { User } = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -194,6 +195,65 @@ describe("/api/auth", () => {
       });
     });
   });
+
+  describe("POST /forgotPassword", () => {
+    let email;
+
+    beforeEach(() => {
+      url = "/api/auth/forgotPassword";
+      email = "test@test.com";
+    });
+
+    it("should return 400 if user doesn't send any data", async () => {
+      const res = await exec({});
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 400 if email is not valid", async () => {
+      email = "aaaaa";
+      const res = await exec({email});
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 404 if email is not exist", async () => {
+      email = "aaaaa@test.com";
+      const res = await exec({email});
+      expect(res.status).toBe(404);
+    });
+
+    it("should return 200 if email exist", async () => {
+      await saveUser("test", email, "12345");
+
+      const res = await exec({email});
+      expect(res.status).toBe(200);
+    });
+
+    it("should add a random token with length 40 if email exist", async () => {
+      await saveUser("test", email, "12345");
+      const res = await exec({email});
+      let user = await User.findOne({email});
+
+      expect(user).not.toBeNull();
+      expect(user).toHaveProperty('forgotPassword');
+      expect(user.forgotPassword).toHaveProperty('token');
+      expect(user.forgotPassword.token).toHaveLength(40);
+    });
+
+    it("should have a createdAt which is less than 5 minutes if email exist", async () => {
+      await saveUser("test", email, "12345");
+      const res = await exec({email});
+      let user = await User.findOne({email});
+
+      expect(user).not.toBeNull();
+      expect(user.forgotPassword).toHaveProperty('token');
+      const now = moment();
+      const was = moment(user.forgotPassword.createdAt * 1000);
+      expect(now.diff(was,'minutes')).toBeLessThan(5);
+    });
+
+
+
+  })
 
   async function saveUser(name, email, password) {
     const user = new User({ name, email, password });

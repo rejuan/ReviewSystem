@@ -22,7 +22,9 @@
     "joi-objectid": "^2.0.0",
     "jsonwebtoken": "^8.4.0",
     "lodash": "^4.17.11",
+    "moment": "^2.23.0",
     "mongoose": "^5.4.2",
+    "nodemailer": "^5.0.0",
     "winston": "^3.1.0",
     "winston-mongodb": "^4.0.3"
   },

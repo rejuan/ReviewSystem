@@ -1,11 +1,16 @@
 const _ = require("lodash");
 const bcrypt = require("bcrypt");
 const express = require("express");
+const crypto = require("crypto");
+const moment = require("moment");
+const {sendMail} = require("../email/forgotPassword");
+
 const router = express.Router();
 const {
   User,
   registrationValidate,
-  signinValidation
+  signinValidation,
+  forgotPasswordValidation
 } = require("../models/user");
 
 router.post("/registration", async (req, res) => {
@@ -41,6 +46,27 @@ router.post("/signin", async (req, res) => {
   res
     .header("x-auth-token", token)
     .send(_.pick(user, ["_id", "name", "email"]));
+});
+
+router.post("/forgotPassword", async (req, res) => {
+  const { error } = forgotPasswordValidation(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const user = await User.findOne({ email: req.body.email});
+  if(!user) return res.status(404).send("Email doesn't exist");
+
+  const forgotPassword = {
+    forgotPassword: {
+      token : crypto.randomBytes(20).toString('hex'),
+      createdAt : moment().unix()
+    }
+  };
+
+  user.set(forgotPassword);
+  await user.save();
+  await sendMail(user.name, user.email, user.forgotPassword.token);
+  res.status(200).send("Success");
+
 });
 
 module.exports = router;

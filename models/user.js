@@ -23,6 +23,10 @@ const userSchema = new mongoose.Schema({
     minlength: 5,
     maxlength: 1024
   },
+  forgotPassword: {
+    token: String,
+    createdAt: Number
+  },
   status: {
     type: String,
     required: true,
@@ -87,6 +91,17 @@ function signinValidation(user) {
   return Joi.validate(user, schema);
 }
 
+function forgotPasswordValidation(user) {
+  const schema = {
+    email: Joi.string()
+        .required()
+        .email()
+  };
+
+  return Joi.validate(user, schema);
+}
+
 exports.User = User;
 exports.registrationValidate = registrationValidate;
 exports.signinValidation = signinValidation;
+exports.forgotPasswordValidation = forgotPasswordValidation;
