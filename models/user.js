@@ -53,6 +53,18 @@ userSchema.methods.generateAuthToken = function() {
   return token;
 };
 
+userSchema.methods.generateForgotPassToken = function() {
+  const token = jwt.sign(
+      {
+        email: this.email,
+        token: this.forgotPassword.token
+      },
+      config.get("jwtPrivateKey")
+  );
+
+  return token;
+};
+
 const User = mongoose.model("User", userSchema);
 
 function registrationValidate(user) {

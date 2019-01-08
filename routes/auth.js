@@ -64,9 +64,11 @@ router.post("/forgotPassword", async (req, res) => {
 
   user.set(forgotPassword);
   await user.save();
-  await sendMail(user.name, user.email, user.forgotPassword.token);
+  await sendMail(user.name, user.email, user.generateForgotPassToken());
   res.status(200).send("Success");
 
 });
+
+
 
 module.exports = router;

@@ -228,7 +228,7 @@ describe("/api/auth", () => {
       expect(res.status).toBe(200);
     });
 
-    it("should add a random token with length 40 if email exist", async () => {
+    it("should add a token if email exist", async () => {
       await saveUser("test", email, "12345");
       const res = await exec({email});
       let user = await User.findOne({email});
@@ -236,7 +236,6 @@ describe("/api/auth", () => {
       expect(user).not.toBeNull();
       expect(user).toHaveProperty('forgotPassword');
       expect(user.forgotPassword).toHaveProperty('token');
-      expect(user.forgotPassword.token).toHaveLength(40);
     });
 
     it("should have a createdAt which is less than 5 minutes if email exist", async () => {
@@ -250,8 +249,6 @@ describe("/api/auth", () => {
       const was = moment(user.forgotPassword.createdAt * 1000);
       expect(now.diff(was,'minutes')).toBeLessThan(5);
     });
-
-
 
   })
 
