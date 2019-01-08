@@ -51,7 +51,7 @@ userSchema.methods.generateAuthToken = function() {
 
 const User = mongoose.model("User", userSchema);
 
-function validateUser(user) {
+function registrationValidate(user) {
   const schema = {
     name: Joi.string()
       .min(3)
@@ -88,5 +88,5 @@ function signinValidation(user) {
 }
 
 exports.User = User;
-exports.registrationValidate = validateUser;
+exports.registrationValidate = registrationValidate;
 exports.signinValidation = signinValidation;
