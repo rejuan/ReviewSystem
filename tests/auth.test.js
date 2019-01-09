@@ -4,11 +4,13 @@ const { User } = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const config = require("config");
+const crypto = require("crypto");
 const _ = require("lodash");
 let server;
 
 beforeEach(() => {
   server = require("../index");
+  jest.setTimeout(30000);
 });
 
 afterEach(async () => {
@@ -252,10 +254,93 @@ describe("/api/auth", () => {
 
   })
 
+  describe("POST /resetPassword/:hash", () => {
+    let newPassword, name, password, email;
+
+    beforeEach(() => {
+      url = "/api/auth/resetPassword/";
+      newPassword = "123456";
+      name = "test";
+      email = "test@test.com";
+      password = "12345";
+    });
+
+    it("should return 400 if no token", async () => {
+      url = url + "1234";
+      const res = await exec({password});
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 401 if token expired", async () => {
+      const forgotPassword = {
+          token : crypto.randomBytes(20).toString('hex'),
+          createdAt : moment().unix() - (6 * 60)
+      };
+      let user = new User({name, email, password, forgotPassword});
+      await user.save();
+      const token = user.generateForgotPassToken();
+
+      url = url + token;
+      password = "123456";
+      res = await exec({password});
+      expect(res.status).toBe(401);
+    });
+
+    it("should return 400 if password less than 5", async () => {
+      const user = await saveUser(name, email, password);
+      const token = user.generateForgotPassToken();
+      user.forgotPassword.createdAt = moment().unix() - (6 * 60);
+      await user.save();
+
+      url = url + token;
+      password = "123";
+      const res = await exec({password});
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 400 if password more than 256", async () => {
+      const user = await saveUser(name, email, password);
+      const token = user.generateForgotPassToken();
+      user.forgotPassword.createdAt = moment().unix() - (6 * 60);
+      await user.save();
+
+      url = url + token;
+      password = new Array(256).fill("a");
+      const res = await exec({password});
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 400 if no password", async () => {
+      const user = await saveUser(name, email, password);
+      const token = user.generateForgotPassToken();
+      user.forgotPassword.createdAt = moment().unix() - (6 * 60);
+      await user.save();
+
+      url = url + token;
+      const res = await exec({});
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 200 if valid input", async () => {
+      const user = await saveUser(name, email, password);
+      const token = user.generateForgotPassToken();
+
+      url = "/api/auth/resetPassword/" + token;
+      password = "123456";
+      const res = await exec({password});
+      expect(res.status).toBe(200);
+    });
+  })
+
   async function saveUser(name, email, password) {
-    const user = new User({ name, email, password });
+    const forgotPassword = {
+      token : crypto.randomBytes(20).toString('hex'),
+      createdAt : moment().unix()
+    };
+
+    const user = new User({ name, email, password, forgotPassword });
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
-    await user.save();
+    return await user.save();
   }
 });

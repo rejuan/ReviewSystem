@@ -113,7 +113,33 @@ function forgotPasswordValidation(user) {
   return Joi.validate(user, schema);
 }
 
+function checkJwtToken(token) {
+  try {
+    const decode = jwt.verify(token, config.get("jwtPrivateKey"));
+    if(!decode.hasOwnProperty("email") || !decode.hasOwnProperty("token")) {
+      return false;
+    } else {
+      return decode;
+    }
+  } catch(Ex) {
+    return false;
+  }
+}
+
+function resetPasswordValidation(password) {
+  const schema = {
+    password: Joi.string()
+        .min(5)
+        .max(255)
+        .required()
+  };
+
+  return Joi.validate(password, schema);
+}
+
 exports.User = User;
 exports.registrationValidate = registrationValidate;
 exports.signinValidation = signinValidation;
 exports.forgotPasswordValidation = forgotPasswordValidation;
+exports.checkJwtToken = checkJwtToken;
+exports.resetPasswordValidation = resetPasswordValidation;

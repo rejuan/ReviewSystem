@@ -1,4 +1,6 @@
 const winston = require("winston");
+require('express-async-errors');
+
 const errorStackTracerFormat = winston.format(info => {
   if (info.meta && info.meta instanceof Error) {
     info.message = `${info.message} ${info.meta.stack}`;
