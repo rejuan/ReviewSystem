@@ -137,9 +137,29 @@ function resetPasswordValidation(password) {
   return Joi.validate(password, schema);
 }
 
+function changePasswordValidation(body) {
+  const schema = {
+    currentPassword: Joi.string()
+        .min(5)
+        .max(255)
+        .required(),
+    newPassword: Joi.string()
+        .min(5)
+        .max(255)
+        .required(),
+    confirmPassword: Joi.string()
+        .min(5)
+        .max(255)
+        .required()
+  };
+
+  return Joi.validate(body, schema);
+}
+
 exports.User = User;
 exports.registrationValidate = registrationValidate;
 exports.signinValidation = signinValidation;
 exports.forgotPasswordValidation = forgotPasswordValidation;
 exports.checkJwtToken = checkJwtToken;
 exports.resetPasswordValidation = resetPasswordValidation;
+exports.changePasswordValidation = changePasswordValidation;

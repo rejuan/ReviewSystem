@@ -5,6 +5,7 @@ const crypto = require("crypto");
 const moment = require("moment");
 const winston = require("winston");
 const {sendMail} = require("../email/forgotPassword");
+const auth = require("../middleware/auth");
 
 const router = express.Router();
 const {
@@ -13,7 +14,8 @@ const {
   signinValidation,
   forgotPasswordValidation,
   checkJwtToken,
-  resetPasswordValidation
+  resetPasswordValidation,
+  changePasswordValidation
 } = require("../models/user");
 
 router.post("/registration", async (req, res) => {
@@ -69,11 +71,9 @@ router.post("/forgotPassword", async (req, res) => {
   await user.save();
   await sendMail(user.name, user.email, user.generateForgotPassToken());
   res.status(200).send("Success");
-
 });
 
 router.post("/resetPassword/:hash", async (req, res) => {
-  winston.info(req.params.hash);
   let result = checkJwtToken(req.params.hash);
   if(!result) return res.status(400).send("Invalid token");
 
@@ -96,6 +96,26 @@ router.post("/resetPassword/:hash", async (req, res) => {
   return res.status(200).send("Changed successfully");
 });
 
+
+router.post("/changePassword", auth, async (req, res) => {
+  const { error } = changePasswordValidation(req.body);
+  if(error) return res.status(400).send(error.details[0].message);
+
+  if(req.body.newPassword != req.body.confirmPassword)
+    return res.status(400).send("New password & confirm password should same");
+
+  const user = await User.findById(req.user._id);
+  if (!user) return res.status(400).send("User doesn't exist");
+
+  const validPassword = await bcrypt.compare(req.body.currentPassword, user.password);
+  if (!validPassword)
+    return res.status(400).send("Email and password doesn't match");
+
+  const salt = await bcrypt.genSalt(10);
+  user.password = await bcrypt.hash(req.body.currentPassword, salt);
+  await user.save();
+  return res.status(200).send("Changed successfully");
+});
 
 
 module.exports = router;

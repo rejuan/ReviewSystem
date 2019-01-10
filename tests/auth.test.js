@@ -21,10 +21,17 @@ afterEach(async () => {
 describe("/api/auth", () => {
   let url;
 
-  const exec = requestObjet => {
+  const exec = (requestObjet) => {
     return request(server)
-      .post(url)
-      .send(requestObjet);
+        .post(url)
+        .send(requestObjet);
+  };
+
+  const execWithToken = (requestObjet, token) => {
+    return request(server)
+        .post(url)
+        .set('x-auth-token', token)
+        .send(requestObjet);
   };
 
   describe("POST /registration", () => {
@@ -330,6 +337,74 @@ describe("/api/auth", () => {
       const res = await exec({password});
       expect(res.status).toBe(200);
     });
+  })
+
+  describe("POST /changePassword", () => {
+    let name, email, currentPassword, newPassword, confirmPassword;
+
+    beforeEach(() => {
+      url = "/api/auth/changePassword";
+      name = "test";
+      email = "test@test.com";
+      currentPassword = "12345";
+      newPassword = "1234567";
+      confirmPassword = "1234567";
+    });
+
+    it("should return 401 if no JWT", async () => {
+      const user = await saveUser(name, email, currentPassword);
+      const token = "";
+      const res = await execWithToken({}, token);
+      expect(res.status).toBe(401);
+    });
+
+    it("should return 400 if JWT not valid", async () => {
+      const user = await saveUser(name, email, currentPassword);
+      const token = "1234";
+      const res = await execWithToken({}, token);
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 400 if any of the field empty", async () => {
+      const user = await saveUser(name, email, currentPassword);
+      const token = user.generateAuthToken();
+
+      let res = await execWithToken({currentPassword,newPassword}, token);
+      expect(res.status).toBe(400);
+
+      res = await execWithToken({currentPassword,confirmPassword}, token);
+      expect(res.status).toBe(400);
+
+      res = await execWithToken({newPassword,confirmPassword}, token);
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 400 if new & confirm password doesn't match", async () => {
+      const user = await saveUser(name, email, currentPassword);
+      const token = user.generateAuthToken();
+      confirmPassword = "abcdef";
+
+      let res = await execWithToken({currentPassword,newPassword, confirmPassword}, token);
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 400 if current password doesn't match", async () => {
+      const user = await saveUser(name, email, currentPassword);
+      const token = user.generateAuthToken();
+      currentPassword = "abcdef";
+
+      let res = await execWithToken({currentPassword,newPassword, confirmPassword}, token);
+      expect(res.status).toBe(400);
+    });
+
+    it("should return 200 if valid input", async () => {
+      const user = await saveUser(name, email, currentPassword);
+      const token = user.generateAuthToken();
+
+      let res = await execWithToken({currentPassword,newPassword, confirmPassword}, token);
+      expect(res.status).toBe(200);
+    });
+
   })
 
   async function saveUser(name, email, password) {
