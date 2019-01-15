@@ -7,7 +7,10 @@ module.exports = function () {
     mongoose
         .connect(
             db,
-            {useNewUrlParser: true}
+            {
+                useCreateIndex: true,
+                useNewUrlParser: true
+            }
         )
         .then(() => winstone.info(`${db} db server connected successfully`));
 };
