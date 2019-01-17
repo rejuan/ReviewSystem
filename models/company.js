@@ -30,7 +30,11 @@ function addValidate(company) {
         name: Joi.string()
             .min(3)
             .max(255)
-            .required()
+            .required(),
+        mobile: Joi.string(),
+        address: Joi.string(),
+        website: Joi.string(),
+        details: Joi.string()
     };
 
     return Joi.validate(company, schema);
