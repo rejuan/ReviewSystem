@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --watchAll --verbose",
-    "coverage": "jest --watchAll --verbose --coverage"
+    "test": "jest -i --watchAll --verbose",
+    "coverage": "jest -i --watchAll --verbose --coverage"
   },
   "repository": {
     "type": "git",

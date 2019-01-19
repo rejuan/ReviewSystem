@@ -39,7 +39,7 @@ describe("/api/auth", () => {
 
         beforeEach(() => {
             name = "test";
-            email = "test@test.com";
+            email = "auth@test.com";
             password = "123456";
             url = "/api/auth/registration";
         });
@@ -135,7 +135,7 @@ describe("/api/auth", () => {
 
         beforeEach(() => {
             url = "/api/auth/signin";
-            email = "test@test.com";
+            email = "auth@test.com";
             password = "123456";
         });
 
@@ -210,7 +210,7 @@ describe("/api/auth", () => {
 
         beforeEach(() => {
             url = "/api/auth/forgotPassword";
-            email = "test@test.com";
+            email = "auth@test.com";
         });
 
         it("should return 400 if user doesn't send any data", async () => {
@@ -268,7 +268,7 @@ describe("/api/auth", () => {
             url = "/api/auth/resetPassword/";
             newPassword = "123456";
             name = "test";
-            email = "test@test.com";
+            email = "auth@test.com";
             password = "12345";
         });
 
@@ -345,7 +345,7 @@ describe("/api/auth", () => {
         beforeEach(() => {
             url = "/api/auth/changePassword";
             name = "test";
-            email = "test@test.com";
+            email = "auth@test.com";
             currentPassword = "12345";
             newPassword = "1234567";
             confirmPassword = "1234567";
