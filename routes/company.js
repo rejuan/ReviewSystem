@@ -88,5 +88,17 @@ router.delete('/:id', auth, async (req, res) => {
     res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
 });
 
+router.get('/:id', auth, async (req, res) => {
+    const query = {
+        _id: req.params.id,
+        user: req.user._id,
+        status: 'active'
+    };
+
+    const company = await Company.findOne(query);
+    if(!company) return res.status(404).send("Company not exist");
+
+    res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
+});
 
 module.exports = router;

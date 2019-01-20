@@ -237,6 +237,64 @@ describe("/api/company", () => {
         });
     });
 
+    describe("GET /:id", () => {
+        let name, email, password, companyData, user;
+
+        beforeEach(async () => {
+            name = "test";
+            email = "company@test.com";
+            password = "123456";
+            user = await saveUser(name, email, password);
+            companyData = {
+                name: name,
+                contact: {
+                    mobile: 'mobile',
+                    address: 'address',
+                    website: 'http://website.com/'
+                },
+                details: 'details details',
+                user: user._id.toString(),
+                status: 'active'
+            };
+            companyData = await saveCompany(companyData);
+            url = "/api/company/" + companyData._id.toString();
+        });
+
+        const exec = (token) => {
+            return request(server)
+                .get(url)
+                .set('x-auth-token', token)
+                .send();
+        };
+
+        it("should return 401 if no JWT", async () => {
+            const token = "";
+            const res = await exec(token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 400 if JWT not valid", async () => {
+            const token = "1234";
+            const res = await exec(token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 404 if company not exist", async () => {
+            companyData.status = 'delete';
+            await companyData.save();
+
+            const token = user.generateAuthToken();
+            let res = await exec(token);
+            expect(res.status).toBe(404);
+        });
+
+        it("should return 200 if company exist", async () => {
+            const token = user.generateAuthToken();
+            let res = await exec(token);
+            expect(res.status).toBe(200);
+        });
+    });
+
     async function saveUser(name, email, password) {
         const forgotPassword = {
             token: crypto.randomBytes(20).toString('hex'),
