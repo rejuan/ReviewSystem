@@ -3,6 +3,7 @@ const multer = require('multer');
 const _ = require('lodash');
 const {upload} = require('../middleware/image');
 const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 const {Company, addValidate} = require("../models/company");
 const router = express.Router();
 
@@ -97,6 +98,22 @@ router.get('/:id', auth, async (req, res) => {
 
     const company = await Company.findOne(query);
     if(!company) return res.status(404).send("Company not exist");
+
+    res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
+});
+
+router.put('/suspend/:id', [auth, admin], async (req, res) => {
+    const query = {
+        _id: req.params.id,
+        user: req.user._id,
+        status: 'active'
+    };
+
+    const company = await Company.findOneAndUpdate(query, {
+        $set: {status: 'suspend'}
+    }, {new: true});
+
+    if(!company) return res.status(404).send('Company not exist');
 
     res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
 });

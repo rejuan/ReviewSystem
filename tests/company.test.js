@@ -7,7 +7,7 @@ const crypto = require("crypto");
 const _ = require("lodash");
 let server;
 
-beforeEach(() => {
+beforeEach(async () => {
     server = require("../index");
     jest.setTimeout(30000);
 });
@@ -96,7 +96,8 @@ describe("/api/company", () => {
         });
     });
 
-    describe("PUT /:id", () => {
+    describe("before each save user and company", () => {
+
         let name, email, password, companyData, user;
 
         beforeEach(async () => {
@@ -116,199 +117,224 @@ describe("/api/company", () => {
                 status: 'active'
             };
             companyData = await saveCompany(companyData);
-            url = "/api/company/" + companyData._id.toString();
         });
 
-        const exec = (requestObjet, token) => {
-            return request(server)
-                .put(url)
-                .set('x-auth-token', token)
-                .field('name', requestObjet.name)
-                .attach('image', 'tests/images/test.png');
-        };
+        describe("PUT /:id", () => {
 
-        const execAllField = (requestObjet, token) => {
-            return request(server)
-                .put(url)
-                .set('x-auth-token', token)
-                .field('name', requestObjet.name)
-                .field('mobile', requestObjet.mobile)
-                .field('address', requestObjet.address)
-                .field('website', requestObjet.website)
-                .field('details', requestObjet.details)
-                .attach('image', 'tests/images/test.png');
-        };
+            beforeEach(async () => {
+                url = "/api/company/" + companyData._id.toString();
+            });
 
-        it("should return 401 if no JWT", async () => {
-            const token = "";
-            const res = await exec({name: "test company"}, token);
-            expect(res.status).toBe(401);
-        });
-
-        it("should return 400 if JWT not valid", async () => {
-            const token = "1234";
-            const res = await exec({name: "test company"}, token);
-            expect(res.status).toBe(400);
-        });
-
-        it("should return 400 if name field empty", async () => {
-            const token = user.generateAuthToken();
-            let res = await exec({name: ""}, token);
-            expect(res.status).toBe(400);
-
-            res = await exec({name: "a"}, token);
-            expect(res.status).toBe(400);
-
-            name = new Array(257).join('a');
-            res = await exec({name: name}, token);
-            expect(res.status).toBe(400);
-        });
-
-        it("should return 200 if input valid", async () => {
-            const token = user.generateAuthToken();
-            name = "test edit";
-            let mobile = "mobile edit";
-            let address = "address edit";
-            let website = "website edit";
-            let details = "details edit";
-
-            let res = await execAllField({
-                name, mobile, address, website, details
-            }, token);
-            expect(res.status).toBe(200);
-        });
-    });
-
-    describe("DELETE /:id", () => {
-        let name, email, password, companyData, user;
-
-        beforeEach(async () => {
-            name = "test";
-            email = "company@test.com";
-            password = "123456";
-            user = await saveUser(name, email, password);
-            companyData = {
-                name: name,
-                contact: {
-                    mobile: 'mobile',
-                    address: 'address',
-                    website: 'http://website.com/'
-                },
-                details: 'details details',
-                user: user._id.toString(),
-                status: 'active'
+            const exec = (requestObjet, token) => {
+                return request(server)
+                    .put(url)
+                    .set('x-auth-token', token)
+                    .field('name', requestObjet.name)
+                    .attach('image', 'tests/images/test.png');
             };
-            companyData = await saveCompany(companyData);
-            url = "/api/company/" + companyData._id.toString();
-        });
 
-        const exec = (token) => {
-            return request(server)
-                .delete(url)
-                .set('x-auth-token', token)
-                .send();
-        };
-
-        it("should return 401 if no JWT", async () => {
-            const token = "";
-            const res = await exec(token);
-            expect(res.status).toBe(401);
-        });
-
-        it("should return 400 if JWT not valid", async () => {
-            const token = "1234";
-            const res = await exec(token);
-            expect(res.status).toBe(400);
-        });
-
-        it("should return 404 if company not exist", async () => {
-            companyData.status = 'delete';
-            await companyData.save();
-
-            const token = user.generateAuthToken();
-            let res = await exec(token);
-            expect(res.status).toBe(404);
-        });
-
-        it("should return 200 if successfully delete", async () => {
-            const token = user.generateAuthToken();
-            let res = await exec(token);
-            expect(res.status).toBe(200);
-        });
-    });
-
-    describe("GET /:id", () => {
-        let name, email, password, companyData, user;
-
-        beforeEach(async () => {
-            name = "test";
-            email = "company@test.com";
-            password = "123456";
-            user = await saveUser(name, email, password);
-            companyData = {
-                name: name,
-                contact: {
-                    mobile: 'mobile',
-                    address: 'address',
-                    website: 'http://website.com/'
-                },
-                details: 'details details',
-                user: user._id.toString(),
-                status: 'active'
+            const execAllField = (requestObjet, token) => {
+                return request(server)
+                    .put(url)
+                    .set('x-auth-token', token)
+                    .field('name', requestObjet.name)
+                    .field('mobile', requestObjet.mobile)
+                    .field('address', requestObjet.address)
+                    .field('website', requestObjet.website)
+                    .field('details', requestObjet.details)
+                    .attach('image', 'tests/images/test.png');
             };
-            companyData = await saveCompany(companyData);
-            url = "/api/company/" + companyData._id.toString();
+
+            it("should return 401 if no JWT", async () => {
+                const token = "";
+                const res = await exec({name: "test company"}, token);
+                expect(res.status).toBe(401);
+            });
+
+            it("should return 400 if JWT not valid", async () => {
+                const token = "1234";
+                const res = await exec({name: "test company"}, token);
+                expect(res.status).toBe(400);
+            });
+
+            it("should return 400 if name field empty", async () => {
+                const token = user.generateAuthToken();
+                let res = await exec({name: ""}, token);
+                expect(res.status).toBe(400);
+
+                res = await exec({name: "a"}, token);
+                expect(res.status).toBe(400);
+
+                name = new Array(257).join('a');
+                res = await exec({name: name}, token);
+                expect(res.status).toBe(400);
+            });
+
+            it("should return 200 if input valid", async () => {
+                const token = user.generateAuthToken();
+                name = "test edit";
+                let mobile = "mobile edit";
+                let address = "address edit";
+                let website = "website edit";
+                let details = "details edit";
+
+                let res = await execAllField({
+                    name, mobile, address, website, details
+                }, token);
+                expect(res.status).toBe(200);
+            });
         });
 
-        const exec = (token) => {
-            return request(server)
-                .get(url)
-                .set('x-auth-token', token)
-                .send();
-        };
+        describe("DELETE /:id", () => {
 
-        it("should return 401 if no JWT", async () => {
-            const token = "";
-            const res = await exec(token);
-            expect(res.status).toBe(401);
+            beforeEach(() => {
+                url = "/api/company/" + companyData._id.toString();
+            });
+
+            const exec = (token) => {
+                return request(server)
+                    .delete(url)
+                    .set('x-auth-token', token)
+                    .send();
+            };
+
+            it("should return 401 if no JWT", async () => {
+                const token = "";
+                const res = await exec(token);
+                expect(res.status).toBe(401);
+            });
+
+            it("should return 400 if JWT not valid", async () => {
+                const token = "1234";
+                const res = await exec(token);
+                expect(res.status).toBe(400);
+            });
+
+            it("should return 404 if company not exist", async () => {
+                companyData.status = 'delete';
+                await companyData.save();
+
+                const token = user.generateAuthToken();
+                let res = await exec(token);
+                expect(res.status).toBe(404);
+            });
+
+            it("should return 200 if successfully delete", async () => {
+                const token = user.generateAuthToken();
+                let res = await exec(token);
+                expect(res.status).toBe(200);
+            });
         });
 
-        it("should return 400 if JWT not valid", async () => {
-            const token = "1234";
-            const res = await exec(token);
-            expect(res.status).toBe(400);
+        describe("GET /:id", () => {
+
+            beforeEach(async () => {
+                url = "/api/company/" + companyData._id.toString();
+            });
+
+            const exec = (token) => {
+                return request(server)
+                    .get(url)
+                    .set('x-auth-token', token)
+                    .send();
+            };
+
+            it("should return 401 if no JWT", async () => {
+                const token = "";
+                const res = await exec(token);
+                expect(res.status).toBe(401);
+            });
+
+            it("should return 400 if JWT not valid", async () => {
+                const token = "1234";
+                const res = await exec(token);
+                expect(res.status).toBe(400);
+            });
+
+            it("should return 404 if company not exist", async () => {
+                companyData.status = 'delete';
+                await companyData.save();
+
+                const token = user.generateAuthToken();
+                let res = await exec(token);
+                expect(res.status).toBe(404);
+            });
+
+            it("should return 200 if company exist", async () => {
+                const token = user.generateAuthToken();
+                let res = await exec(token);
+                expect(res.status).toBe(200);
+            });
         });
 
-        it("should return 404 if company not exist", async () => {
-            companyData.status = 'delete';
-            await companyData.save();
+        describe("PUT /suspend/:id", () => {
 
-            const token = user.generateAuthToken();
-            let res = await exec(token);
-            expect(res.status).toBe(404);
-        });
+            beforeEach(async () => {
+                url = "/api/company/suspend/" + companyData._id.toString();
+            });
 
-        it("should return 200 if company exist", async () => {
-            const token = user.generateAuthToken();
-            let res = await exec(token);
-            expect(res.status).toBe(200);
+            const exec = (token) => {
+                return request(server)
+                    .put(url)
+                    .set('x-auth-token', token)
+                    .send();
+            };
+
+            it("should return 401 if no JWT", async () => {
+                const token = "";
+                const res = await exec(token);
+                expect(res.status).toBe(401);
+            });
+
+            it("should return 400 if JWT not valid", async () => {
+                const token = "1234";
+                const res = await exec(token);
+                expect(res.status).toBe(400);
+            });
+
+            it("should return 401 if user not admin", async () => {
+                const token = user.generateAuthToken();
+                const res = await exec(token);
+                expect(res.status).toBe(401);
+            });
+
+            it("should return 404 if company not exist", async () => {
+                user.userType = 'admin';
+                await user.save();
+
+                companyData.status = 'delete';
+                await companyData.save();
+
+                const token = user.generateAuthToken();
+                let res = await exec(token);
+                expect(res.status).toBe(404);
+            });
+
+            it("should return 200 if successfully delete", async () => {
+                user.userType = 'admin';
+                await user.save();
+
+                const token = user.generateAuthToken();
+                let res = await exec(token);
+                expect(res.status).toBe(200);
+            });
         });
     });
-
-    async function saveUser(name, email, password) {
-        const forgotPassword = {
-            token: crypto.randomBytes(20).toString('hex'),
-            createdAt: moment().unix()
-        };
-
-        const user = new User({name, email, password, forgotPassword});
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(user.password, salt);
-        return await user.save();
-    }
-
-    async function saveCompany(companyData) {
-        const company = new Company(companyData);
-        return await company.save();
-    }
 });
+
+async function saveUser(name, email, password) {
+    const forgotPassword = {
+        token: crypto.randomBytes(20).toString('hex'),
+        createdAt: moment().unix()
+    };
+
+    const user = new User({name, email, password, forgotPassword});
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+    return await user.save();
+}
+
+async function saveCompany(companyData) {
+    const company = new Company(companyData);
+    return await company.save();
+}
