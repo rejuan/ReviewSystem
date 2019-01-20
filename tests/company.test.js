@@ -101,7 +101,7 @@ describe("/api/company", () => {
 
         beforeEach(async () => {
             name = "test";
-            email = "test@test.com";
+            email = "company@test.com";
             password = "123456";
             user = await saveUser(name, email, password);
             companyData = {
@@ -112,7 +112,8 @@ describe("/api/company", () => {
                     website: 'http://website.com/'
                 },
                 details: 'details details',
-                user: user._id.toString()
+                user: user._id.toString(),
+                status: 'active'
             };
             companyData = await saveCompany(companyData);
             url = "/api/company/" + companyData._id.toString();
@@ -174,6 +175,64 @@ describe("/api/company", () => {
             let res = await execAllField({
                 name, mobile, address, website, details
             }, token);
+            expect(res.status).toBe(200);
+        });
+    });
+
+    describe("DELETE /:id", () => {
+        let name, email, password, companyData, user;
+
+        beforeEach(async () => {
+            name = "test";
+            email = "company@test.com";
+            password = "123456";
+            user = await saveUser(name, email, password);
+            companyData = {
+                name: name,
+                contact: {
+                    mobile: 'mobile',
+                    address: 'address',
+                    website: 'http://website.com/'
+                },
+                details: 'details details',
+                user: user._id.toString(),
+                status: 'active'
+            };
+            companyData = await saveCompany(companyData);
+            url = "/api/company/" + companyData._id.toString();
+        });
+
+        const exec = (token) => {
+            return request(server)
+                .delete(url)
+                .set('x-auth-token', token)
+                .send();
+        };
+
+        it("should return 401 if no JWT", async () => {
+            const token = "";
+            const res = await exec(token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 400 if JWT not valid", async () => {
+            const token = "1234";
+            const res = await exec(token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 404 if company not exist", async () => {
+            companyData.status = 'delete';
+            await companyData.save();
+
+            const token = user.generateAuthToken();
+            let res = await exec(token);
+            expect(res.status).toBe(404);
+        });
+
+        it("should return 200 if successfully delete", async () => {
+            const token = user.generateAuthToken();
+            let res = await exec(token);
             expect(res.status).toBe(200);
         });
     });

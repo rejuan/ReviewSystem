@@ -16,6 +16,12 @@ const companySchema = new Schema({
         website: String
     },
     details: String,
+    status: {
+        type: String,
+        required: true,
+        enum: ["active", "suspend", "delete"],
+        default: "active"
+    },
     user: {
         type: Schema.Types.ObjectId,
         ref: 'User',
