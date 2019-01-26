@@ -118,4 +118,20 @@ router.put('/suspend/:id', [auth, admin], async (req, res) => {
     res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
 });
 
+router.get('/', auth, async (req, res) => {
+    const query = {
+        user: req.user._id,
+        status: 'active'
+    };
+
+    let company = await Company.find(query).lean();
+    company = company.map(function(item) {
+        delete item.__v;
+        delete item.status;
+        return item;
+    });
+
+    res.send(company);
+});
+
 module.exports = router;
