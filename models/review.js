@@ -35,7 +35,7 @@ const reviewSchema = new Schema({
 
 const Review = mongoose.model("Review", reviewSchema);
 
-function addValidate(review) {
+function validate(review) {
     const schema = {
         company: Joi.objectId().required(),
         star: Joi.number().integer().min(1).max(5).required(),
@@ -46,5 +46,16 @@ function addValidate(review) {
     return Joi.validate(review, schema);
 }
 
+function editValidate(review) {
+    const schema = {
+        star: Joi.number().integer().min(1).max(5).required(),
+        title: Joi.string().min(3).max(30).required(),
+        details: Joi.string().min(3).max(1024).required()
+    };
+
+    return Joi.validate(review, schema);
+}
+
 exports.Review = Review;
-exports.addValidate = addValidate;
+exports.validate = validate;
+exports.editValidate = editValidate;

@@ -21,36 +21,35 @@ afterEach(async () => {
 });
 
 describe("/api/review", () => {
-    let url;
+    let url, name, email, password, companyData, company, user, reviewData, review;
+
+    beforeEach(async () => {
+        url = "/api/review";
+        name = "test";
+        email = "review@test.com";
+        password = "123456";
+        user = await saveUser(name, email, password);
+        companyData = {
+            name: name,
+            contact: {
+                mobile: 'mobile',
+                address: 'address',
+                website: 'http://website.com/'
+            },
+            details: 'details details',
+            user: user._id.toString(),
+            status: 'active'
+        };
+        company = await saveCompany(companyData);
+        reviewData = {
+            company: company._id.toString(),
+            star: 2,
+            title: "test title",
+            details: "details description of a company"
+        };
+    });
 
     describe("POST /", () => {
-        let name, email, password, companyData, company, user, reviewData;
-
-        beforeEach(async () => {
-            url = "/api/review";
-            name = "test";
-            email = "review@test.com";
-            password = "123456";
-            user = await saveUser(name, email, password);
-            companyData = {
-                name: name,
-                contact: {
-                    mobile: 'mobile',
-                    address: 'address',
-                    website: 'http://website.com/'
-                },
-                details: 'details details',
-                user: user._id.toString(),
-                status: 'active'
-            };
-            company = await saveCompany(companyData);
-            reviewData = {
-                company: company._id.toString(),
-                star: 2,
-                title: "test title",
-                details: "details description of a company"
-            };
-        });
 
         const exec = (requestObjet, token) => {
             return request(server)
@@ -156,6 +155,119 @@ describe("/api/review", () => {
 
     });
 
+    describe("PUT /:id", () => {
+
+        beforeEach(async () => {
+            reviewData.user = user._id.toString();
+            review = await saveReview(reviewData);
+            delete reviewData.user;
+            delete reviewData.company;
+            url = url + "/" + review._id.toString();
+        });
+
+        const exec = (requestObjet, token) => {
+            return request(server)
+                .put(url)
+                .set('x-auth-token', token)
+                .send(requestObjet);
+        };
+
+        it("should return 401 if no JWT", async () => {
+            const token = "";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 400 if JWT not valid", async () => {
+            const token = "1234";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 400 if no star", async () => {
+            const token = user.generateAuthToken();
+            delete reviewData.star;
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 400 if star less than 1", async () => {
+            const token = user.generateAuthToken();
+            reviewData.star = 0;
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 400 if star more than 5", async () => {
+            const token = user.generateAuthToken();
+            reviewData.star = 6;
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 400 if no title", async () => {
+            const token = user.generateAuthToken();
+            delete reviewData.title;
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 400 if title less than 3", async () => {
+            const token = user.generateAuthToken();
+            reviewData.title = "a";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 400 if title more than 30", async () => {
+            const token = user.generateAuthToken();
+            reviewData.title = new Array(32).join("a");
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 400 if no details", async () => {
+            const token = user.generateAuthToken();
+            delete reviewData.details;
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 400 if details less than 3", async () => {
+            const token = user.generateAuthToken();
+            reviewData.details = "aa";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 400 if details more than 1024", async () => {
+            const token = user.generateAuthToken();
+            reviewData.details = new Array(1026).join("a");
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 404 if user doesn't the owner of given id", async () => {
+            const anotherUser = await saveUser(
+                "test", "random@random.com", "12345");
+            const token = anotherUser.generateAuthToken();
+
+            reviewData.title = "edited title";
+            reviewData.details = "edited details";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(404);
+        });
+
+        it("should return 200 if valid input", async () => {
+            const token = user.generateAuthToken();
+            reviewData.title = "edited title";
+            reviewData.details = "edited details";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(200);
+        });
+
+    });
+
 });
 
 async function saveUser(name, email, password) {
@@ -173,4 +285,9 @@ async function saveUser(name, email, password) {
 async function saveCompany(companyData) {
     const company = new Company(companyData);
     return await company.save();
+}
+
+async function saveReview(reviewData) {
+    const review = new Review(reviewData);
+    return await review.save();
 }
