@@ -68,4 +68,29 @@ router.delete("/:id", auth, async (req, res) => {
     res.send(_.pick(review, ["_id", "user", "company", "star", "title", "details"]));
 });
 
+router.get("/", auth, async (req, res) => {
+
+    let query;
+    if(req.body.company) {
+        query = {
+            company: req.body.company,
+            status: 'active'
+        };
+    } else {
+        query = {
+            user: req.user._id,
+            status: 'active'
+        };
+    }
+
+    let review = await Review.find(query).lean();
+    review = review.map(function(item) {
+        delete item.__v;
+        delete item.status;
+        return item;
+    });
+
+    res.send(review);
+});
+
 module.exports = router;

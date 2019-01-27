@@ -325,6 +325,48 @@ describe("/api/review", () => {
 
     });
 
+    describe("GET /", () => {
+
+        beforeEach(async () => {
+            reviewData.user = user._id.toString();
+            review = await saveReview(reviewData);
+        });
+
+        const exec = (requestObjet, token) => {
+            return request(server)
+                .get(url)
+                .set('x-auth-token', token)
+                .send(requestObjet);
+        };
+
+        it("should return 401 if no JWT", async () => {
+            const token = "";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 400 if JWT not valid", async () => {
+            const token = "1234";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 200 if valid input for my reviews", async () => {
+            const token = user.generateAuthToken();
+            delete reviewData.user;
+            delete reviewData.company;
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(200);
+        });
+
+        it("should return 200 if valid input for company reviews", async () => {
+            const token = user.generateAuthToken();
+            delete reviewData.user;
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(200);
+        });
+    });
+
 });
 
 async function saveUser(name, email, password) {
