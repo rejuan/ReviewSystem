@@ -30,7 +30,13 @@ const reviewSchema = new Schema({
         required: true,
         minLength: 3,
         maxLength: 1024
-    }
+    },
+    status: {
+        type: String,
+        required: true,
+        enum: ["active", "delete"],
+        default: "active"
+    },
 });
 
 const Review = mongoose.model("Review", reviewSchema);

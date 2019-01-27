@@ -268,6 +268,63 @@ describe("/api/review", () => {
 
     });
 
+    describe("DELETE /:id", () => {
+
+        beforeEach(async () => {
+            reviewData.user = user._id.toString();
+            review = await saveReview(reviewData);
+            delete reviewData.user;
+            delete reviewData.company;
+            url = url + "/" + review._id.toString();
+        });
+
+        const exec = (requestObjet, token) => {
+            return request(server)
+                .delete(url)
+                .set('x-auth-token', token)
+                .send(requestObjet);
+        };
+
+        it("should return 401 if no JWT", async () => {
+            const token = "";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 400 if JWT not valid", async () => {
+            const token = "1234";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 404 if user doesn't the owner of given id", async () => {
+            const anotherUser = await saveUser(
+                "test", "random@random.com", "12345");
+            const token = anotherUser.generateAuthToken();
+
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(404);
+        });
+
+        it("should return 200 if valid input", async () => {
+            const token = user.generateAuthToken();
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(200);
+        });
+
+        it("should return 200 if admin", async () => {
+            let anotherUser = await saveUser(
+                "test", "random@random.com", "12345");
+            anotherUser.userType = "admin";
+            anotherUser = await anotherUser.save();
+
+            const token = anotherUser.generateAuthToken();
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(200);
+        });
+
+    });
+
 });
 
 async function saveUser(name, email, password) {

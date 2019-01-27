@@ -44,4 +44,28 @@ router.put("/:id", auth, async (req, res) => {
     res.send(_.pick(review, ["_id", "user", "company", "star", "title", "details"]));
 });
 
+router.delete("/:id", auth, async (req, res) => {
+
+    let query;
+    if (req.user.userType === 'admin') {
+        query = {
+            _id: req.params.id
+        };
+    } else {
+        query = {
+            _id: req.params.id,
+            user: req.user._id
+        };
+    }
+
+    const review = await Review.findOneAndUpdate(query, {
+        $set: {
+            status: "delete"
+        }
+    }, {new: true});
+
+    if (!review) return res.status(404).send("Review not found");
+    res.send(_.pick(review, ["_id", "user", "company", "star", "title", "details"]));
+});
+
 module.exports = router;
