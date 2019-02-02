@@ -117,6 +117,58 @@ describe("/api/user", () => {
         });
     });
 
+    describe("PUT /api/user/suspend/:id", () => {
+
+        let testUser;
+
+        beforeEach(async () => {
+            url = "/api/user/suspend/";
+            testUser = await saveUser(name, "user2@test.com", password);
+            url = url + testUser._id.toString();
+        });
+
+        const exec = (token) => {
+            return request(server)
+                .put(url)
+                .set('x-auth-token', token)
+                .send();
+        };
+
+        it("should return 401 if no JWT", async () => {
+            const token = "";
+            const res = await exec(token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 400 if JWT not valid", async () => {
+            const token = "1234";
+            const res = await exec(token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 401 if not admin", async () => {
+            user.userType = "user";
+            user = await user.save();
+            const token = user.generateAuthToken();
+            const res = await exec(token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 404 if not found", async () => {
+            testUser.status = "suspend";
+            testUser = await testUser.save();
+            const token = user.generateAuthToken();
+            const res = await exec(token);
+            expect(res.status).toBe(404);
+        });
+
+        it("should return 200 if valid input", async () => {
+            const token = user.generateAuthToken();
+            const res = await exec(token);
+            expect(res.status).toBe(200);
+        });
+    });
+
 });
 
 async function saveUser(name, email, password) {
