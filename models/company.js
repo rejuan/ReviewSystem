@@ -26,7 +26,12 @@ const companySchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         required: true
-    }
+    },
+    tags: [String]
+});
+
+companySchema.index({
+    name: 1
 });
 
 const Company = mongoose.model("Company", companySchema);
