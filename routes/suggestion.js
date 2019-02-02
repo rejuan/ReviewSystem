@@ -8,19 +8,15 @@ router.get('/company', async (req, res) => {
     const pageNumber = getPageNumber(req);
     const pageSize = getPageSize(req);
     const keyword = req.query.keyword;
-    const query = {name: new RegExp('.*' + keyword + '.*', 'i')};
+    const query = [
+        { $match : { "name" : new RegExp('^' + keyword , 'i') }},
+        { $group : { "_id": "$name"}},
+        { $sort : { "_id" : 1 } },
+        { $skip : (pageNumber - 1) * pageSize},
+        { $limit : pageSize}
+    ];
 
-    let company = await Company.find(query)
-        .skip((pageNumber - 1) * pageSize)
-        .limit(pageSize)
-        .sort({name: 1}).lean();
-
-    company = company.map(function (item) {
-        delete item.__v;
-        delete item.status;
-        return item;
-    });
-
+    let company = await Company.aggregate(query);
     res.send(company);
 });
 
