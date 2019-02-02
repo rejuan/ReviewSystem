@@ -72,6 +72,51 @@ describe("/api/user", () => {
         });
     });
 
+    describe("GET /api/user/suspended", () => {
+
+        beforeEach(async () => {
+            url = "/api/user/suspended/";
+        });
+
+        const exec = (token) => {
+            return request(server)
+                .get(url)
+                .set('x-auth-token', token)
+                .send();
+        };
+
+        it("should return 401 if no JWT", async () => {
+            const token = "";
+            const res = await exec(token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 400 if JWT not valid", async () => {
+            const token = "1234";
+            const res = await exec(token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 401 if not admin", async () => {
+            user.userType = "user";
+            user = await user.save();
+            const token = user.generateAuthToken();
+            const res = await exec(token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 200 if everything fine", async () => {
+            let testUser = await saveUser(name, "user2@test.com", password);
+            testUser.status = "suspend";
+            testUser = await testUser.save();
+
+            url = url + "?pageNumber=1&pageSize=10";
+            const token = user.generateAuthToken();
+            let res = await exec(token);
+            expect(res.status).toBe(200);
+        });
+    });
+
 });
 
 async function saveUser(name, email, password) {

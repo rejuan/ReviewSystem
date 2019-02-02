@@ -29,4 +29,27 @@ router.get("/active", [auth, admin] , async (req, res) => {
     res.send(user);
 });
 
+router.get("/suspended", [auth, admin] , async (req, res) => {
+    const pageNumber = getPageNumber(req);
+    const pageSize = getPageSize(req);
+
+    let query = {
+        status: 'suspend'
+    };
+
+    let user = await User.find(query)
+        .sort({_id: 1})
+        .skip((pageNumber - 1) * pageSize)
+        .limit(pageSize)
+        .lean();
+
+    user = user.map(function(item) {
+        delete item.__v;
+        delete item.password;
+        return item;
+    });
+
+    res.send(user);
+});
+
 module.exports = router;
