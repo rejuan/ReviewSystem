@@ -201,6 +201,54 @@ describe("/api/response", () => {
 
     });
 
+    describe("DELETE /", () => {
+
+        beforeEach(() => {
+            delete responseData.response;
+        });
+
+        const exec = (requestObjet, token) => {
+            return request(server)
+                .delete(url)
+                .set('x-auth-token', token)
+                .send(requestObjet);
+        };
+
+        it("should return 401 if no JWT", async () => {
+            const token = "";
+            const res = await exec(responseData, token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 400 if JWT not valid", async () => {
+            const token = "1234";
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(400);
+        });
+
+        it("should return 404 if no review found", async () => {
+            const token = user.generateAuthToken();
+            responseData.id = user._id; // wrong id
+            const res = await exec(responseData, token);
+            expect(res.status).toBe(404);
+        });
+
+        it("should return 401 if not company owner", async () => {
+            const testUser = await saveUser(name, "response1@test.com", password);
+            const token = testUser.generateAuthToken();
+            const res = await exec(responseData, token);
+            expect(res.status).toBe(401);
+        });
+
+        it("should return 200 if valid input", async () => {
+            review = await review.save();
+            const token = user.generateAuthToken();
+            const res = await exec(responseData, token);
+            expect(res.status).toBe(200);
+        });
+
+    });
+
 });
 
 async function saveUser(name, email, password) {

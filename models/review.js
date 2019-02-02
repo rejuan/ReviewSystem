@@ -76,7 +76,16 @@ function responseValidate(response) {
     return Joi.validate(response, schema);
 }
 
+function deleteResponseValidate(response) {
+    const schema = {
+        id: Joi.objectId().required()
+    };
+
+    return Joi.validate(response, schema);
+}
+
 exports.Review = Review;
 exports.validate = validate;
 exports.editValidate = editValidate;
 exports.responseValidate = responseValidate;
+exports.deleteResponseValidate = deleteResponseValidate;
