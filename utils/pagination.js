@@ -15,13 +15,13 @@ function getPageNumber(req) {
 function getPageSize(req) {
     if(req.query.pageSize) {
         const pageSize = parseInt(req.query.pageSize);
-        if (pageSize < 1) {
-            return 1;
+        if ((pageSize < 10) || (pageSize > 50)) {
+            return 10;
         } else {
             return pageSize;
         }
     } else {
-        return 1;
+        return 10;
     }
 }
 

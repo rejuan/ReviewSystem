@@ -8,7 +8,7 @@ module.exports = function () {
         .connect(
             db,
             {
-                useCreateIndex: true,
+                autoIndex: false,
                 useNewUrlParser: true
             }
         )

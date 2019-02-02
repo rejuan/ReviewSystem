@@ -36,6 +36,7 @@ describe("/api/search", () => {
             },
             details: 'details details',
             user: user._id.toString(),
+            tags: ["can", "canada", "candy"],
             status: 'active'
         };
         companyData = await saveCompany(companyData);
@@ -55,6 +56,25 @@ describe("/api/search", () => {
 
         it("should return 200 if company exist", async () => {
             url = url + "?keyword=te&pageNumber=1&pageSize=1";
+            let res = await exec();
+            expect(res.status).toBe(200);
+        });
+    });
+
+    describe("GET /api/search/tag", () => {
+
+        beforeEach(async () => {
+            url = "/api/search/tag/";
+        });
+
+        const exec = () => {
+            return request(server)
+                .get(url)
+                .send();
+        };
+
+        it("should return 200 if company exist", async () => {
+            url = url + "?keyword=ca&pageNumber=1&pageSize=1";
             let res = await exec();
             expect(res.status).toBe(200);
         });
