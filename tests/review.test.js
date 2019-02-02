@@ -147,6 +147,13 @@ describe("/api/review", () => {
             expect(res.status).toBe(400);
         });
 
+        it("should return 404 if company not exist", async () => {
+            const token = user.generateAuthToken();
+            reviewData.company = user._id;
+            const res = await exec(reviewData, token);
+            expect(res.status).toBe(404);
+        });
+
         it("should return 200 if valid input", async () => {
             const token = user.generateAuthToken();
             const res = await exec(reviewData, token);

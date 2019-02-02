@@ -17,6 +17,9 @@ router.post("/", auth, async (req, res) => {
         details: req.body.details
     };
 
+    const company = await Company.findById(req.body.company);
+    if(!company) return res.status(404).send("Not found");
+
     const review = new Review(reviewData);
     await review.save();
 
