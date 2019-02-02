@@ -37,6 +37,11 @@ const reviewSchema = new Schema({
         enum: ["active", "delete"],
         default: "active"
     },
+    response: {
+        type: String,
+        minLength: 3,
+        maxLength: 512
+    }
 });
 
 const Review = mongoose.model("Review", reviewSchema);
@@ -62,6 +67,16 @@ function editValidate(review) {
     return Joi.validate(review, schema);
 }
 
+function responseValidate(response) {
+    const schema = {
+        id: Joi.objectId().required(),
+        response: Joi.string().min(3).max(512).required()
+    };
+
+    return Joi.validate(response, schema);
+}
+
 exports.Review = Review;
 exports.validate = validate;
 exports.editValidate = editValidate;
+exports.responseValidate = responseValidate;
