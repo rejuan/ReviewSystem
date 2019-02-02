@@ -37,7 +37,7 @@ router.post("/", auth, async (req, res) => {
     });
 });
 
-router.put('/:id', auth, async (req, res) => {
+router.patch('/:id', auth, async (req, res) => {
     upload(req, res, async function (err) {
         if (err instanceof multer.MulterError) {
             return res.status(400).send(err.message);
@@ -112,7 +112,7 @@ router.get('/:id', auth, async (req, res) => {
     res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
 });
 
-router.put('/suspend/:id', [auth, admin], async (req, res) => {
+router.patch('/suspend/:id', [auth, admin], async (req, res) => {
     const query = {
         _id: req.params.id,
         user: req.user._id,

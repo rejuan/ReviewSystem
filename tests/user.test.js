@@ -117,7 +117,7 @@ describe("/api/user", () => {
         });
     });
 
-    describe("PUT /api/user/suspend/:id", () => {
+    describe("PATCH /api/user/suspend/:id", () => {
 
         let testUser;
 
@@ -129,7 +129,7 @@ describe("/api/user", () => {
 
         const exec = (token) => {
             return request(server)
-                .put(url)
+                .patch(url)
                 .set('x-auth-token', token)
                 .send();
         };
@@ -169,7 +169,7 @@ describe("/api/user", () => {
         });
     });
 
-    describe("PUT /api/user/unsuspend/:id", () => {
+    describe("PATCH /api/user/unsuspend/:id", () => {
 
         let testUser;
 
@@ -181,7 +181,7 @@ describe("/api/user", () => {
 
         const exec = (token) => {
             return request(server)
-                .put(url)
+                .patch(url)
                 .set('x-auth-token', token)
                 .send();
         };

@@ -162,7 +162,7 @@ describe("/api/review", () => {
 
     });
 
-    describe("PUT /:id", () => {
+    describe("PATCH /:id", () => {
 
         beforeEach(async () => {
             reviewData.user = user._id.toString();
@@ -174,7 +174,7 @@ describe("/api/review", () => {
 
         const exec = (requestObjet, token) => {
             return request(server)
-                .put(url)
+                .patch(url)
                 .set('x-auth-token', token)
                 .send(requestObjet);
         };

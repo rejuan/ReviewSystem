@@ -26,7 +26,7 @@ router.post("/", auth, async (req, res) => {
     res.send(_.pick(review, ["_id", "user", "company", "star", "title", "details"]));
 });
 
-router.put("/:id", auth, async (req, res) => {
+router.patch("/:id", auth, async (req, res) => {
     const {error} = editValidate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 

@@ -119,7 +119,7 @@ describe("/api/company", () => {
             companyData = await saveCompany(companyData);
         });
 
-        describe("PUT /:id", () => {
+        describe("PATCH /:id", () => {
 
             beforeEach(async () => {
                 url = "/api/company/" + companyData._id.toString();
@@ -127,7 +127,7 @@ describe("/api/company", () => {
 
             const exec = (requestObjet, token) => {
                 return request(server)
-                    .put(url)
+                    .patch(url)
                     .set('x-auth-token', token)
                     .field('name', requestObjet.name)
                     .attach('image', 'tests/images/test.png');
@@ -135,7 +135,7 @@ describe("/api/company", () => {
 
             const execAllField = (requestObjet, token) => {
                 return request(server)
-                    .put(url)
+                    .patch(url)
                     .set('x-auth-token', token)
                     .field('name', requestObjet.name)
                     .field('mobile', requestObjet.mobile)
@@ -295,7 +295,7 @@ describe("/api/company", () => {
             });
         });
 
-        describe("PUT /suspend/:id", () => {
+        describe("PATCH /suspend/:id", () => {
 
             beforeEach(async () => {
                 url = "/api/company/suspend/" + companyData._id.toString();
@@ -303,7 +303,7 @@ describe("/api/company", () => {
 
             const exec = (token) => {
                 return request(server)
-                    .put(url)
+                    .patch(url)
                     .set('x-auth-token', token)
                     .send();
             };

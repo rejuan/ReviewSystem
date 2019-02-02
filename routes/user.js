@@ -52,7 +52,7 @@ router.get("/suspended", [auth, admin] , async (req, res) => {
     res.send(user);
 });
 
-router.put("/suspend/:id", [auth, admin] , async (req, res) => {
+router.patch("/suspend/:id", [auth, admin] , async (req, res) => {
 
     let user = await User.findOne({
         _id : req.params.id,
@@ -66,7 +66,7 @@ router.put("/suspend/:id", [auth, admin] , async (req, res) => {
     res.send(_.pick(user, ["_id", "status", "userType", "name", "email"]));
 });
 
-router.put("/unsuspend/:id", [auth, admin] , async (req, res) => {
+router.patch("/unsuspend/:id", [auth, admin] , async (req, res) => {
 
     let user = await User.findOne({
         _id : req.params.id,

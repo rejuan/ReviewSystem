@@ -128,11 +128,11 @@ describe("/api/response", () => {
 
     });
 
-    describe("PUT /", () => {
+    describe("PATCH /", () => {
 
         const exec = (requestObjet, token) => {
             return request(server)
-                .put(url)
+                .patch(url)
                 .set('x-auth-token', token)
                 .send(requestObjet);
         };

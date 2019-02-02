@@ -20,7 +20,7 @@ router.post("/", auth, async (req, res) => {
     res.send(_.pick(review, ["_id", "user", "company", "star", "title", "details", "response"]));
 });
 
-router.put("/", auth, async (req, res) => {
+router.patch("/", auth, async (req, res) => {
     const {error} = responseValidate(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
