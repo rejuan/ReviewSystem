@@ -18,7 +18,7 @@ afterEach(async () => {
     server.close();
 });
 
-describe("/api/search", () => {
+describe("/api/suggestion", () => {
 
     let name, email, password, companyData, user, url;
 
@@ -42,10 +42,10 @@ describe("/api/search", () => {
         companyData = await saveCompany(companyData);
     });
 
-    describe("GET /api/search/company", () => {
+    describe("GET /api/suggestion/company", () => {
 
         beforeEach(async () => {
-            url = "/api/search/company/";
+            url = "/api/suggestion/company/";
         });
 
         const exec = () => {
@@ -55,16 +55,16 @@ describe("/api/search", () => {
         };
 
         it("should return 200 if everything fine", async () => {
-            url = url + "?keyword=te&pageNumber=1&pageSize=1";
+            url = url + "?keyword=te&pageNumber=1&pageSize=10";
             let res = await exec();
             expect(res.status).toBe(200);
         });
     });
 
-    describe("GET /api/search/tag", () => {
+    describe("GET /api/suggestion/tag", () => {
 
         beforeEach(async () => {
-            url = "/api/search/tag/";
+            url = "/api/suggestion/tag/";
         });
 
         const exec = () => {
@@ -74,7 +74,7 @@ describe("/api/search", () => {
         };
 
         it("should return 200 if everything fine", async () => {
-            url = url + "?keyword=ca&pageNumber=1&pageSize=1";
+            url = url + "?keyword=ca&pageNumber=1&pageSize=10";
             let res = await exec();
             expect(res.status).toBe(200);
         });
