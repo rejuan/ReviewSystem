@@ -68,7 +68,13 @@ router.put('/:id', auth, async (req, res) => {
             status: 'active'
         };
 
+        if(req.user.userType == 'admin') {
+            delete query.user;
+        }
+
         const company = await Company.findOneAndUpdate(query, companyData, {new: true});
+        if(!company) return res.status(404).send("Not found");
+
         res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
     });
 });
@@ -79,6 +85,10 @@ router.delete('/:id', auth, async (req, res) => {
         user: req.user._id,
         status: 'active'
     };
+
+    if(req.user.userType == 'admin') {
+        delete query.user;
+    }
 
     const company = await Company.findOneAndUpdate(query, {
         $set: {status: 'delete'}

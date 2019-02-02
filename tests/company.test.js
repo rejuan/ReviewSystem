@@ -183,6 +183,24 @@ describe("/api/company", () => {
                 }, token);
                 expect(res.status).toBe(200);
             });
+
+            it("should return 200 if input valid and admin", async () => {
+                let adminUser = await saveUser(name, "company.admin@test.com", password);
+                adminUser.userType = "admin";
+                adminUser = await adminUser.save();
+
+                const token = adminUser.generateAuthToken();
+                name = "test edit";
+                let mobile = "mobile edit";
+                let address = "address edit";
+                let website = "website edit";
+                let details = "details edit";
+
+                let res = await execAllField({
+                    name, mobile, address, website, details
+                }, token);
+                expect(res.status).toBe(200);
+            });
         });
 
         describe("DELETE /:id", () => {
@@ -221,6 +239,16 @@ describe("/api/company", () => {
 
             it("should return 200 if successfully delete", async () => {
                 const token = user.generateAuthToken();
+                let res = await exec(token);
+                expect(res.status).toBe(200);
+            });
+
+            it("should return 200 if admin & successfully delete", async () => {
+                let adminUser = await saveUser(name, "company.admin@test.com", password);
+                adminUser.userType = "admin";
+                adminUser = await adminUser.save();
+
+                const token = adminUser.generateAuthToken();
                 let res = await exec(token);
                 expect(res.status).toBe(200);
             });
