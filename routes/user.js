@@ -66,4 +66,18 @@ router.put("/suspend/:id", [auth, admin] , async (req, res) => {
     res.send(_.pick(user, ["_id", "status", "userType", "name", "email"]));
 });
 
+router.put("/unsuspend/:id", [auth, admin] , async (req, res) => {
+
+    let user = await User.findOne({
+        _id : req.params.id,
+        status: 'suspend'
+    });
+
+    if(!user) return res.status(404).send("Not found");
+
+    user.status = 'active';
+    user = await user.save();
+    res.send(_.pick(user, ["_id", "status", "userType", "name", "email"]));
+});
+
 module.exports = router;
