@@ -1,147 +1,19 @@
 const express = require("express");
-const multer = require('multer');
-const _ = require('lodash');
-const {upload} = require('../middleware/image');
+const companyController = require("../controllers/company");
 const auth = require("../middleware/auth");
 const admin = require("../middleware/admin");
-const {Company, addValidate} = require("../models/company");
 const router = express.Router();
 
-router.post("/", auth, async (req, res) => {
-    upload(req, res, async function (err) {
-        if (err instanceof multer.MulterError) {
-            return res.status(400).send(err.message);
-        } else if (err) {
-            return res.status(400).send(err.message);
-        }
+router.post("/", auth, companyController.createCompany);
 
-        const {error} = addValidate(req.body);
-        if (error) return res.status(400).send(error.details[0].message);
+router.patch('/:id', auth, companyController.updateCompany);
 
-        const companyData = {
-            name: req.body.name,
-            image: req.file.filename,
-            contact: {
-                mobile: req.body.mobile,
-                address: req.body.address,
-                website: req.body.website
-            },
-            details: req.body.details,
-            user: req.user._id
-        };
+router.delete('/:id', auth, companyController.deleteCompany);
 
-        const company = new Company(companyData);
-        await company.save();
+router.get('/:id', auth, companyController.getCompany);
 
-        res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
-    });
-});
+router.patch('/suspend/:id', [auth, admin], companyController.suspendCompany);
 
-router.patch('/:id', auth, async (req, res) => {
-    upload(req, res, async function (err) {
-        if (err instanceof multer.MulterError) {
-            return res.status(400).send(err.message);
-        } else if (err) {
-            return res.status(400).send(err.message);
-        }
-
-        let companyData = {
-            name: req.body.name,
-            contact: {
-                mobile: req.body.mobile,
-                address: req.body.address,
-                website: req.body.website
-            },
-            details: req.body.details
-        };
-
-        if (req.file) {
-            companyData.image = req.file.filename;
-        }
-
-        const {error} = addValidate(req.body);
-        if (error) return res.status(400).send(error.details[0].message);
-
-        const query = {
-            _id: req.params.id,
-            user: req.user._id,
-            status: 'active'
-        };
-
-        if(req.user.userType == 'admin') {
-            delete query.user;
-        }
-
-        const company = await Company.findOneAndUpdate(query, companyData, {new: true});
-        if(!company) return res.status(404).send("Not found");
-
-        res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
-    });
-});
-
-router.delete('/:id', auth, async (req, res) => {
-    const query = {
-        _id: req.params.id,
-        user: req.user._id,
-        status: 'active'
-    };
-
-    if(req.user.userType == 'admin') {
-        delete query.user;
-    }
-
-    const company = await Company.findOneAndUpdate(query, {
-        $set: {status: 'delete'}
-    }, {new: true});
-
-    if(!company) return res.status(404).send('Company not exist');
-
-    res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
-});
-
-router.get('/:id', auth, async (req, res) => {
-    const query = {
-        _id: req.params.id,
-        user: req.user._id,
-        status: 'active'
-    };
-
-    const company = await Company.findOne(query);
-    if(!company) return res.status(404).send("Company not exist");
-
-    res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
-});
-
-router.patch('/suspend/:id', [auth, admin], async (req, res) => {
-    const query = {
-        _id: req.params.id,
-        user: req.user._id,
-        status: 'active'
-    };
-
-    const company = await Company.findOneAndUpdate(query, {
-        $set: {status: 'suspend'}
-    }, {new: true});
-
-    if(!company) return res.status(404).send('Company not exist');
-
-    res.send(_.pick(company, ["_id", "name", "image", "contact", "details", "user"]));
-});
-
-router.get('/', auth, async (req, res) => {
-    const query = {
-        user: req.user._id,
-        status: 'active'
-    };
-
-    let company = await Company.find(query).lean();
-    company = company.map(function(item) {
-        delete item.__v;
-        delete item.status;
-        return item;
-    });
-
-    res.send(company);
-});
+router.get('/', auth, companyController.companyList);
 
 module.exports = router;
