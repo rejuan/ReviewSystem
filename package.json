@@ -1,5 +1,5 @@
 {
-  "name": "reviewsystem-nodejs",
+  "name": "reviewsystem",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://rejuan@bitbucket.org/rejuan/reviewsystem-nodejs.git"
+    "url": "https://github.com/rejuan/ReviewSystem.git"
   },
   "author": "A M S Rejuan",
   "license": "ISC",
