@@ -12,7 +12,7 @@
     "url": "https://github.com/rejuan/ReviewSystem.git"
   },
   "author": "A M S Rejuan",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^3.0.3",
     "body-parser": "^1.18.3",
