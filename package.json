@@ -1,11 +1,15 @@
 {
   "name": "reviewsystem",
   "version": "1.0.0",
-  "description": "",
+  "description": "A fast, simple & powerful RESTful API based Review System",
   "main": "index.js",
   "scripts": {
-    "test": "jest -i --watchAll --verbose",
-    "coverage": "jest -i --watchAll --verbose --coverage"
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "test": "jest -i --forceExit",
+    "test:watch": "jest -i --watchAll --verbose",
+    "coverage": "jest -i --coverage --forceExit",
+    "coverage:watch": "jest -i --watchAll --verbose --coverage"
   },
   "repository": {
     "type": "git",
