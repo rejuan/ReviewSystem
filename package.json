@@ -9,7 +9,8 @@
     "test": "jest -i --forceExit",
     "test:watch": "jest -i --watchAll --verbose",
     "coverage": "jest -i --coverage --forceExit",
-    "coverage:watch": "jest -i --watchAll --verbose --coverage"
+    "coverage:watch": "jest -i --watchAll --verbose --coverage",
+    "coveralls": "jest -i --coverage --forceExit && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
