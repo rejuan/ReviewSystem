@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/rejuan/ReviewSystem.svg?token=KhpV8JP1fhyPE49az7dy&branch=master)](https://travis-ci.com/rejuan/ReviewSystem)
+[![Build Status](https://travis-ci.com/rejuan/ReviewSystem.svg?token=KhpV8JP1fhyPE49az7dy&branch=master)](https://travis-ci.com/rejuan/ReviewSystem) [![Coverage Status](https://coveralls.io/repos/github/rejuan/ReviewSystem/badge.svg?branch=master)](https://coveralls.io/github/rejuan/ReviewSystem?branch=master)
 
 # Review System
 
