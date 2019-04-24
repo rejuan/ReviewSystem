@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/rejuan/ReviewSystem.svg?token=KhpV8JP1fhyPE49az7dy&branch=master)](https://travis-ci.com/rejuan/ReviewSystem)
+
 Review System
 ============
 A fast, simple & powerful RESTful API based Review System, powered by [Node.js](https://nodejs.org/), [Express](https://expressjs.com/), [MongoDB](https://www.mongodb.com/) and [mongoose](https://mongoosejs.com/)
