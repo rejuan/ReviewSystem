@@ -1,11 +1,11 @@
 [![Build Status](https://travis-ci.com/rejuan/ReviewSystem.svg?token=KhpV8JP1fhyPE49az7dy&branch=master)](https://travis-ci.com/rejuan/ReviewSystem)
 
-Review System
-============
+# Review System
+
 A fast, simple & powerful RESTful API based Review System, powered by [Node.js](https://nodejs.org/), [Express](https://expressjs.com/), [MongoDB](https://www.mongodb.com/) and [mongoose](https://mongoosejs.com/)
 
-Features
-----------
+## Features
+
 - User - Signup/Signin/Forgot/Change password
 - Company - Add/Edit/Delete company
 - Review - Add/Edit/Delete reviews, User review list, Company review list
@@ -15,47 +15,60 @@ Features
 - Admin - Suspend/Unsuspend user & company
 - Authentication & Authorisation - Used JWT based authentication & authorisation
 
-Getting Started
-------------------
+## TO DO List
+
+- Create API documentation with swagger
+- Publish API documentation in apiary
+
+## Getting Started
+
 To get you started you can simply clone the repository:
 
 ```
 git clone https://github.com/rejuan/ReviewSystem.git
 cd ReviewSystem
 ```
+
 and install the dependencies
+
 ```
 npm install
 ```
 
-Run the Application
-------------------------
+## Run the Application
+
 #### Run for development with nodemon
+
 ```
     npm run dev
 ```
+
 #### Run for production
+
 ```
     npm run start
 ```
+
 #### Tests
+
 ```
     npm run test
 ```
+
 #### Code coverage
+
 ```
     npm run coverage
 ```
 
-Authors
-----------
+## Authors
 
-* **A M S Rejuan** - *Initial work* - [github](https://github.com/rejuan)
+- **A M S Rejuan** - _Initial work_ - [github](https://github.com/rejuan)
 
 See also the list of [contributors](https://github.com/rejuan/ReviewSystem/contributors) who participated in this project.
 
-Contributing
-----------------
+## Contributing
+
 Contributions are more than welcome! Open an [issue](https://github.com/rejuan/ReviewSystem/issues/new) and submit a pull request according to issue.
 
 1. Navigate to the main page of the repository
